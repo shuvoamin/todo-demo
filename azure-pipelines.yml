@@ -1,16 +1,35 @@
 trigger:
-  - master
-  
-pool:
-  vmImage: 'Ubuntu-16.04'
-  
+- master
+
+resources:
+- repo: self
+
 variables:
-  imageName: 'pipelines-todo-api'
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: $(dockerRegistryConnection)
+  imageRepository: $(imgRepo)
+  containerRegistry: $(registryDomain)
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
   
-steps:
-- task: Docker@2
-  displayName: Build an image
-  inputs:
-    repository: $(imageName)
-    command: build
-    Dockerfile: ./Dockerfile
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: $(vmImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
