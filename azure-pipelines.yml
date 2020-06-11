@@ -1,16 +1,16 @@
 trigger:
   - master
   
-  pool:
-    vmImage: 'Ubuntu-16.04'
+pool:
+  vmImage: 'Ubuntu-16.04'
   
-  variables:
-    imageName: 'pipelines-todo-api'
+variables:
+  imageName: 'pipelines-todo-api'
   
-  steps:
-  - task: Docker@2
-    displayName: Build an image
-    inputs:
-      repository: $(imageName)
-      command: build
-      Dockerfile: app/Dockerfile
+steps:
+- task: Docker@2
+  displayName: Build an image
+  inputs:
+    repository: $(imageName)
+    command: build
+    Dockerfile: app/Dockerfile
